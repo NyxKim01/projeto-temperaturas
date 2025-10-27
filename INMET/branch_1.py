@@ -2,6 +2,7 @@
 
 import pandas as pd
 
+#Limpa o dataset
 def limpar(caminho):
     #Tira colunas irrelevantes
     df = pd.read_csv(caminho, skiprows=8, encoding="latin1", sep=";")
@@ -50,7 +51,39 @@ def limpar(caminho):
     #Retorna o data frame limpo
     return df
 
+#Acha os mínimos e máximos de uma determinada coluna
 def min_max(caminho, coluna_1, coluna_2):
-    df = pd.read_csv(caminho, skiprows=8, encoding="latin1", sep=";")
+    df = pd.read_csv(caminho)
+
+    #Cria um dataframe com os mínimos e máximos, por coluna_1, usando os valores da coluna_2
     df_min_max = df.groupby([coluna_1])[coluna_2].agg(["min", "max"])
+
+    #Retorna um dataframe com os mínimos e máximos
     return df_min_max
+
+#Divide o dataframe por estações do ano
+def estacoes(caminho):
+    lista = []
+    df = pd.read_csv(caminho)
+
+    #Separa com base nos últimos quatro dígitos da data
+    outono = df[df["Data"]%10000 >= 320]
+    outono = outono[outono["Data"]%10000 <= 620]
+    df = df.drop(outono.index)
+    inverno = df[df["Data"]%10000 >= 621]
+    inverno = inverno[inverno["Data"]%10000 <= 921]
+    df = df.drop(inverno.index)
+    primavera = df[df["Data"]%10000 >= 922]
+    primavera = primavera[primavera["Data"]%10000 <= 1220]
+    df = df.drop(primavera.index)
+    verao = df
+
+    #Coloca os dataframes em uma lista
+    lista.append(outono)
+    lista.append(inverno)
+    lista.append(primavera)
+    lista.append(verao)
+
+    #Retorna uma lista com os dataframes de cada estação do ano
+    return lista
+
